@@ -1,0 +1,112 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "City": {
+      "type": "string",
+      "enum": [
+        "Atlanta",
+        "Jacksonville",
+        "New York City",
+        "Las Angeles",
+        "Chicago"
+      ]
+    },
+    "InventoryItemId": {
+      "type": "object",
+      "properties": {
+        "city": {
+          "type": "string",
+          "enum": [
+            "Atlanta",
+            "Jacksonville",
+            "New York City",
+            "Las Angeles",
+            "Chicago"
+          ]
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "city",
+        "title"
+      ],
+      "additionalProperties": false
+    },
+    "InventoryItem": {
+      "type": "object",
+      "properties": {
+        "city": {
+          "type": "string",
+          "enum": [
+            "Atlanta",
+            "Jacksonville",
+            "New York City",
+            "Las Angeles",
+            "Chicago"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "deleted": {
+          "type": "boolean"
+        },
+        "deletionComment": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "city",
+        "description",
+        "title"
+      ],
+      "additionalProperties": false
+    },
+    "Deletion": {
+      "type": "object",
+      "properties": {
+        "city": {
+          "type": "string",
+          "enum": [
+            "Atlanta",
+            "Jacksonville",
+            "New York City",
+            "Las Angeles",
+            "Chicago"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "comment": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "city",
+        "comment",
+        "title"
+      ],
+      "additionalProperties": false
+    },
+    "HttpMethod": {
+      "type": "string",
+      "enum": [
+        "GET",
+        "HEAD",
+        "POST",
+        "PUT",
+        "DELETE",
+        "CONNECT",
+        "OPTIONS",
+        "TRACE",
+        "PATCH"
+      ]
+    }
+  }
+}

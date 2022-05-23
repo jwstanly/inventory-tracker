@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "module": "CommonJS",
+    "target": "ES2017",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "Node",
+    "declaration": false,
+    "preserveConstEnums": true,
+    "outDir": "./out",
+    "skipLibCheck": true,
+    "sourceMap": false,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "lib": ["../lib"]
+    }
+  },
+  "include": ["src", "lib", "./package.json"],
+  "exclude": ["node_modules"]
+}

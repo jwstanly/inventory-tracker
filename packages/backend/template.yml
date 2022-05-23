@@ -1,0 +1,170 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  inventory-tracker-api
+
+# Transform section specifies one or more macros that AWS CloudFormation uses to process your template
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
+Transform:
+  - AWS::Serverless-2016-10-31
+
+# Parameters:
+#   DomainName:
+#     Type: String
+#     Description: The domain name including the TLD. Example = YourWebsite.com
+#     AllowedPattern: (?!-)[a-zA-Z0-9-.]{1,63}(?<!-)
+#     ConstraintDescription: Must be a domain name including the TLD.
+#   EmailAddress:
+#     Type: String
+#     Description: Your email address. Contact forms and other notifications will be sent to this address. Example = yourEmail@email.com
+#     AllowedPattern: "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
+#     ConstraintDescription: Must be your email address.
+#   AcmCertificateArn:
+#     Type: String
+#     Description: The Amazon Resource Name (ARN) of an AWS Certificate Manager (ACM) certificate. Example = arn:aws:acm:[resource_id_here]
+#     AllowedPattern: 'arn:aws:acm:.*'
+#     ConstraintDescription: Must be the ARN for the ACM certificate.
+#   DebugMode:
+#     Type: String
+#     Description: Determines if Lambdas will forward logs to CloudWatch. At scale this can cost money.
+#     AllowedPattern: '^(?i)(true|false)$'
+#     ConstraintDescription: Must be true or false.
+
+Globals:
+  Function:
+    CodeUri: ./out
+    Runtime: nodejs14.x
+    MemorySize: 128
+    Timeout: 180
+    Environment:
+      Variables:
+        INVENTORY_TABLE: !Ref InventoryTable
+
+Resources:
+  InventoryApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Auth:
+        # DefaultAuthorizer: MyCognitoAuthorizer
+        # Authorizers:
+        #   MyCognitoAuthorizer:
+        #     UserPoolArn: arn:aws:cognito-idp:us-east-1:273540445715:userpool/us-east-1_eId7fXUN3
+        # AddDefaultAuthorizerToCorsPreflight: False
+        UsagePlan:
+          CreateUsagePlan: PER_API
+          Description: The default usage plan for this API
+          Throttle:
+            BurstLimit: 20
+            RateLimit: 10
+      Cors:
+        AllowMethods: "'DELETE,GET,OPTIONS,POST'"
+        AllowHeaders: "'Accept,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Forwarded-For'"
+        AllowOrigin: "'*'"
+        # Switch AllowOrigin to your custom domain whenever not developing on localhost
+        # !Sub
+        #   - "'https://www.${Domain}'"
+        #   - Domain: !Ref DomainName
+      # Domain:
+      #   DomainName: !Join ['.', [api, !Ref DomainName]]
+      #   CertificateArn: !Ref AcmCertificateArn
+      #   EndpointConfiguration: EDGE
+      #   Route53:
+      #     HostedZoneId: !Ref HostedZone
+      MethodSettings:
+        - ResourcePath: '/*'
+          HttpMethod: '*'
+          ThrottlingBurstLimit: 20
+          ThrottlingRateLimit: 10
+          # Enable these to get Execution Logs in CloudWatch (you will also need to make an IAM role for this)
+          # DataTraceEnabled: true
+          # LoggingLevel: INFO
+
+  GetLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: ./src/get.handler
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref InventoryTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref InventoryApi
+            Path: /get
+            Method: GET
+            Auth:
+              ApiKeyRequired: true
+
+  PostLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: ./src/post.handler
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref InventoryTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref InventoryApi
+            Path: /post
+            Method: POST
+            Auth:
+              ApiKeyRequired: true
+
+  DeleteLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: ./src/delete.handler
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref InventoryTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref InventoryApi
+            Path: /delete
+            Method: DELETE
+            Auth:
+              ApiKeyRequired: true
+
+  UndeleteLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: ./src/undelete.handler
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref InventoryTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref InventoryApi
+            Path: /undelete
+            Method: POST
+            Auth:
+              ApiKeyRequired: true
+
+  InventoryTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: InventoryTable
+      AttributeDefinitions:
+        - AttributeName: city
+          AttributeType: S
+        - AttributeName: title
+          AttributeType: S
+      KeySchema:
+        - AttributeName: city
+          KeyType: HASH
+        - AttributeName: title
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5

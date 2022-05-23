@@ -1,0 +1,9 @@
+{
+  "name": "lib",
+  "version": "1.0.0",
+  "scripts": {
+    "schema": "node scripts/schema.js"
+  },
+  "license": "MIT",
+  "devDependencies": {}
+}

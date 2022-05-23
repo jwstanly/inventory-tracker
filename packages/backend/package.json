@@ -1,0 +1,26 @@
+{
+  "name": "@inventory-tracker/backend",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {
+    "ajv": "^8.6.1",
+    "aws-sdk": "^2.1046.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.51",
+    "@types/node": "^16.11.12",
+    "ts-json-schema-generator": "^0.97.0",
+    "typescript": "^3.8.3"
+  },
+  "scripts": {
+    "compile": "tsc -p tsconfig.json && tsc -p lib.tsconfig.json",
+    "migrate": "node migrate-out.js",
+    "deploy": "yarn schema && yarn compile && yarn migrate && sam build && sam deploy && yarn delete",
+    "schema": "yarn workspace lib schema",
+    "delete": "node delete-out.js",
+    "lint": "prettier **/*.ts --write"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

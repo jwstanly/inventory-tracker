@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "CommonJS",
+    "target": "ES2017",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "Node",
+    "declaration": false,
+    "preserveConstEnums": true,
+    "outDir": "./out",
+    "skipLibCheck": true,
+    "sourceMap": false,
+    "resolveJsonModule": true,
+    "composite": true
+  },
+  "files": ["types.ts", "enums.ts"],
+  "exclude": ["node_modules"]
+}

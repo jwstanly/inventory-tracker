@@ -1,0 +1,11 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "inventory-tracker-api"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-ngrny9lgrlz0"
+s3_prefix = "inventory-tracker-api"
+region = "us-east-1"
+profile = "JohnWright"
+capabilities = "CAPABILITY_IAM"
+image_repositories = []

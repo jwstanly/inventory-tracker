@@ -1,0 +1,13 @@
+{
+  "name": "inventory-tracker",
+  "private": true,
+  "license": "MIT",
+  "workspaces": [
+    "packages/backend",
+    "packages/lib",
+    "packages/website"
+  ],
+  "resolutions": {
+    "babel-preset-expo": "^8.5.1"
+  }
+}
